@@ -1,4 +1,4 @@
-package ru.knshnknd.chatobuonok.bot;
+package ru.knshnknd.chatovyonok.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.knshnknd.chatobuonok.service.*;
+import ru.knshnknd.chatovyonok.service.*;
 
 import java.util.Random;
 

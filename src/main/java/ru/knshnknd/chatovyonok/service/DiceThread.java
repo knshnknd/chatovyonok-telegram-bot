@@ -1,7 +1,7 @@
-package ru.knshnknd.chatobuonok.service;
+package ru.knshnknd.chatovyonok.service;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.knshnknd.chatobuonok.bot.ChatovyonokBot;
+import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
 
 public class DiceThread implements Runnable {
     Update update;

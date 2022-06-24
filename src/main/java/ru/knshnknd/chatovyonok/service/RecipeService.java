@@ -1,9 +1,9 @@
-package ru.knshnknd.chatobuonok.service;
+package ru.knshnknd.chatovyonok.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.knshnknd.chatobuonok.dao.RecipeEntity;
-import ru.knshnknd.chatobuonok.dao.RecipeRepository;
+import ru.knshnknd.chatovyonok.dao.RecipeEntity;
+import ru.knshnknd.chatovyonok.dao.RecipeRepository;
 
 import java.util.List;
 import java.util.Random;

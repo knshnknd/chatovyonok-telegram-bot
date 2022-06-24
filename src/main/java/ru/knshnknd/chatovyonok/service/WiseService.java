@@ -1,12 +1,12 @@
-package ru.knshnknd.chatobuonok.service;
+package ru.knshnknd.chatovyonok.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.knshnknd.chatobuonok.dao.UserInfoEntity;
-import ru.knshnknd.chatobuonok.dao.UserInfoRepository;
+import ru.knshnknd.chatovyonok.dao.UserInfoEntity;
+import ru.knshnknd.chatovyonok.dao.UserInfoRepository;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

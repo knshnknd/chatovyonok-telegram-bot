@@ -1,4 +1,4 @@
-package ru.knshnknd.chatobuonok.bot;
+package ru.knshnknd.chatovyonok.bot;
 
 /*
 Текст настройки описания команд для BotFather:
@@ -21,7 +21,7 @@ dice - Подкинуть кубик от 1 до указанного числа
 public class BotConfig {
     // Токен и имя бота от BotFather
     final public static String BOT_TOKEN = "";
-    final public static String BOT_NAME = "";
+    final public static String BOT_NAME = "@";
 
     // API-ключ от OpenWeatherMap
     final public static String WEATHER_API_KEY = "";

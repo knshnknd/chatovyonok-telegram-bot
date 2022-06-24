@@ -1,4 +1,4 @@
-package ru.knshnknd.chatobuonok.service;
+package ru.knshnknd.chatovyonok.service;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -8,7 +8,7 @@ import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import ru.knshnknd.chatobuonok.bot.BotConfig;
+import ru.knshnknd.chatovyonok.bot.BotConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;

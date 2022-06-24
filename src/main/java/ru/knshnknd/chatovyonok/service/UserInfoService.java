@@ -1,10 +1,10 @@
-package ru.knshnknd.chatobuonok.service;
+package ru.knshnknd.chatovyonok.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.knshnknd.chatobuonok.dao.UserInfoEntity;
-import ru.knshnknd.chatobuonok.dao.UserInfoRepository;
+import ru.knshnknd.chatovyonok.dao.UserInfoEntity;
+import ru.knshnknd.chatovyonok.dao.UserInfoRepository;
 
 import java.util.List;
 import java.util.Optional;

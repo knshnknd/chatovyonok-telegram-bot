@@ -1,10 +1,10 @@
-package ru.knshnknd.chatobuonok.service;
+package ru.knshnknd.chatovyonok.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.knshnknd.chatobuonok.bot.ChatovyonokBot;
-import ru.knshnknd.chatobuonok.dao.UpdateEntity;
-import ru.knshnknd.chatobuonok.dao.UpdateRepository;
+import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
+import ru.knshnknd.chatovyonok.dao.UpdateEntity;
+import ru.knshnknd.chatovyonok.dao.UpdateRepository;
 
 import java.util.List;
 import java.util.Optional;

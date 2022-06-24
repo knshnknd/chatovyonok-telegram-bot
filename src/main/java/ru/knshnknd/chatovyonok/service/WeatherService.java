@@ -1,4 +1,4 @@
-package ru.knshnknd.chatobuonok.service;
+package ru.knshnknd.chatovyonok.service;
 
 import com.github.prominence.openweathermap.api.OpenWeatherMapClient;
 import com.github.prominence.openweathermap.api.enums.Language;
@@ -8,7 +8,7 @@ import com.github.prominence.openweathermap.api.model.forecast.*;
 import com.github.prominence.openweathermap.api.model.weather.*;
 import com.github.prominence.openweathermap.api.model.weather.Location;
 import org.springframework.stereotype.Service;
-import ru.knshnknd.chatobuonok.bot.BotConfig;
+import ru.knshnknd.chatovyonok.bot.BotConfig;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

@@ -1,18 +1,13 @@
-package ru.knshnknd.chatobuonok;
+package ru.knshnknd.chatovyonok;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import ru.knshnknd.chatobuonok.bot.ChatovyonokBot;
-import ru.knshnknd.chatobuonok.dao.RecipeEntity;
-import ru.knshnknd.chatobuonok.dao.RecipeRepository;
+import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
 
 @SpringBootApplication
 @EnableScheduling

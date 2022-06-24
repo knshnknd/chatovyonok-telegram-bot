@@ -1,4 +1,4 @@
-package ru.knshnknd.chatobuonok.dao;
+package ru.knshnknd.chatovyonok.dao;
 
 import javax.persistence.*;
 
