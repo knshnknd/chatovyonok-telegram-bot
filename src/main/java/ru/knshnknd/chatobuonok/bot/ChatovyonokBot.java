@@ -29,12 +29,12 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
     @Autowired
     RecipeService recipeService;
 
-    @Scheduled(cron = "0 0 7 * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void timeForForecast() {
         updateService.sendForecastToAll(this);
     }
 
-    @Scheduled(cron = "0 0 11 * * *")
+    @Scheduled(cron = "0 0 9 * * *")
     public void timeForWise() {
         userInfoService.resetAllWiseLimitCount();
         updateService.sendForecastToAll(this);
