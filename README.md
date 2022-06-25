@@ -2,6 +2,7 @@
 - составить прогноз погоды.
 - прислать первое по релевантности видео из YouTube по ключевым словам.
 - прислать поговорку из книги Даля и вести счётчик "мудрости" для каждого пользователя.
+
 Бот построен на: Spring Boot, Spring Data JPA, MySQL Driver, Telegram Bot API, Google YouTube Data API, OpenWeatherMap API, JSoup.
 
 Попробовать: t.me/ChatovyonokBot
