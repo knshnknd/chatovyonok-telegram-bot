@@ -1,17 +1,17 @@
-package ru.knshnknd.chatovyonok.dao;
+package ru.knshnknd.chatovyonok.dao.enitites;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity(name = "user_info")
-public class UserInfoEntity {
+@Entity(name = "user")
+public class UserOfBot {
 
     @Id
     private Long userId;
 
     @Column
-    private String name;
+    private String username;
 
     @Column
     private Long wiseCount;
@@ -19,11 +19,11 @@ public class UserInfoEntity {
     @Column
     private Long wiseLimitCount;
 
-    public UserInfoEntity() {}
+    public UserOfBot() {}
 
-    public UserInfoEntity(Long userId, String name, Long wiseCount, Long wiseLimitCount) {
+    public UserOfBot(Long userId, String username, Long wiseCount, Long wiseLimitCount) {
         this.userId = userId;
-        this.name = name;
+        this.username = username;
         this.wiseCount = wiseCount;
         this.wiseLimitCount = wiseLimitCount;
     }
@@ -36,12 +36,12 @@ public class UserInfoEntity {
         this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getWiseCount() {

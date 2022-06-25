@@ -18,35 +18,23 @@ answer - Узнать ответ на вопрос да-нет.
 dice - Подкинуть кубик от 1 до указанного числа после команды. Например, /dice 100.
  */
 
-public class BotConfig {
-    // Токен и имя бота от BotFather
-    final public static String BOT_TOKEN = "";
-    final public static String BOT_NAME = "@";
-
-    // API-ключ от OpenWeatherMap
-    final public static String WEATHER_API_KEY = "";
-
-    // API-ключ от Google
-    final public static String YOUTUBE_API_KEY = "";
-
-    // Текст для /start
+public class BotMessages {
     final public static String START_TEXT =
             "Здравствуйте! Я чатовой, меня зовут Кузькой, можно Кузенькой. Я маленький ещё, семь веков всего, восьмой пошёл.\n\n" +
                     "Используйте команду /help, чтобы узнать, что я умею!";
 
-    // Текст для //help
     final public static String HELP_TEXT = """
             В домах живут домовые, а в чатах  — чатовые! Вот, что я умею:
 
             /wise – Скажу случайную мудрость из книги Даля «Пословицы русского народа» 1862 года. Короткий вариант: /wi.
             /wise_count – Скажу, чему равен ваш счётчик мудрости! На человека не больше трёх мудростей в день.
-            /wise_subscribe – Буду присылать одну мудрость в день в этот чат.
+            /wise_subscribe – Буду присылать одну мудрость в день в этот чат. 
             /wise_unsubscribe – Перестану присылать одну мудрость в день в этот чат.
             /wise_number – Скажу, сколько всего мудростей я знаю.
             
             /weather [город] – Расскажу прогноз погоды в выбранном городе. Короткий вариант: /we [город].
             Например, /weather Иркутск
-            /weather_subscribe [город] – Буду присылать прогноз погоды для выбранного города раз в день в этот чат.
+            /weather_subscribe [город] – Буду присылать прогноз погоды для выбранного города раз в день в этот чат. Пока что одна подписка на один чат, новая перезапишет старую... Но я работаю над этим!
             Например, /weather_subscribe Иркутск
             /weather_unsubscribe – Перестану присылать прогноз погоды раз в день в этот чат.
                         
@@ -61,6 +49,30 @@ public class BotConfig {
             /dice – Подкину кубик от 1 до 6 или от 1 до выбранного числа.
             Например: /dice 50
             """;
+
+    final public static String WISE_LIMIT_MESSAGE = "Ваш лимит на 3 мудрости в день исчерпан! Приходите за новой мудростью завтра.";
+
+    final public static String WISE_SUBSCRIPTION_MESSAGE = "Лады! Отныне я буду присылать в сей чат одну случайную мудрость ежедённо!\n\n"
+            + "Чтобы отказать от этой затеи, наберите команду /wise_unsubscribe.";
+
+    final public static String WISE_UNSUBSCRIPTION_MESSAGE = "Ну, и ладно! Больше не буду присылать мудрости в этот чат.";
+
+    final public static String WEATHER_EMPTY_REQUEST_MESSAGE = "Ой-ой! Пустой запрос! Напишите после команды название города. " +
+            "\n\nНапример: /weather Иркутск";
+
+    final public static String WEATHER_SUBSCRIPTION_EMPTY_REQUEST_MESSAGE = "М-да... Пустой запрос! Напишите после команды название города, " +
+            "чтобы я присылал прогноз для него каждое утро. \n\n" +
+            "Например, /weather_subscribe Иркутск";
+
+    final public static String WEATHER_UNSUBSCRIPTION_MESSAGE = "Ладно! Поднесь не буду присылать сюда прогноз погоды ежедённо.";
+
+    final public static String WEATHER_CITY_ERROR = "Ох! Неправильно написано название города для прогноза погоды.";
+
+    final public static String DICE_ERROR_MESSAGE = "Батюшки! Написано не число! или слишком большое число! \n\n" +
+            "Напишите после /dice целое число меньше двух миллиардов.";
+
+    final public static String YOUTUBE_EMPTY_REQUEST_MESSAGE = "Ба! Пустой запрос! Напишите ключевые слова после команды для поиска видео!" +
+            "\n\nНапример: /youtube как сделать белый квас";
 
     // Случайные ответы на вопросы да-нет
     final public static String[] RANDOM_ANSWERS = {

@@ -1,9 +1,9 @@
-package ru.knshnknd.chatovyonok.dao;
+package ru.knshnknd.chatovyonok.dao.enitites;
 
 import javax.persistence.*;
 
     @Entity(name = "recipes")
-    public class RecipeEntity {
+    public class Recipe {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -15,8 +15,8 @@ import javax.persistence.*;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String type;
 
-    @Column(nullable = false, columnDefinition = "TINYINT")
-    private Integer isVeg;
+    @Column(nullable = false)
+    private Boolean isMealVegetarian;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String ingredients;
@@ -27,31 +27,27 @@ import javax.persistence.*;
     @Column(columnDefinition = "TEXT")
     private String comments;
 
-    @Column(columnDefinition = "TINYINT")
-    private Integer needsVideo;
+    @Column
+    private Boolean doesRecipeNeedsVideo;
 
-    public RecipeEntity() {
+    public Recipe() {
     }
 
-    public RecipeEntity(String name) {
-        this.name = name;
-    }
-
-    public RecipeEntity(
+    public Recipe(
                         String name,
                         String type,
-                        Integer isVeg,
+                        Boolean isMealVegetarian,
                         String ingredients,
                         String recipe,
                         String comments,
-                        Integer needsVideo) {
+                        Boolean doesRecipeNeedsVideo) {
         this.name = name;
         this.type = type;
-        this.isVeg = isVeg;
+        this.isMealVegetarian = isMealVegetarian;
         this.ingredients = ingredients;
         this.recipe = recipe;
         this.comments = comments;
-        this.needsVideo = needsVideo;
+        this.doesRecipeNeedsVideo = doesRecipeNeedsVideo;
     }
 
     public Long getId() {
@@ -78,12 +74,12 @@ import javax.persistence.*;
         this.type = type;
     }
 
-    public Integer getVeg() {
-        return isVeg;
+    public Boolean getVeg() {
+        return isMealVegetarian;
     }
 
-    public void setVeg(Integer veg) {
-        isVeg = veg;
+    public void setVeg(Boolean veg) {
+        isMealVegetarian = veg;
     }
 
     public String getIngredients() {
@@ -110,11 +106,11 @@ import javax.persistence.*;
         this.comments = comments;
     }
 
-    public Integer getNeedsVideo() {
-        return needsVideo;
+    public Boolean getDoesRecipeNeedsVideo() {
+        return doesRecipeNeedsVideo;
     }
 
-    public void setNeedsVideo(Integer needsVideo) {
-        this.needsVideo = needsVideo;
+    public void setDoesRecipeNeedsVideo(Boolean needsVideo) {
+        this.doesRecipeNeedsVideo = needsVideo;
     }
 }

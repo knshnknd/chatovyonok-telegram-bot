@@ -17,34 +17,35 @@ import java.util.Random;
 public class ChatovyonokBot extends TelegramLongPollingBot {
 
     @Autowired
-    UpdateService updateService;
+    private UpdateService updateService;
     @Autowired
-    WiseService wiseService;
+    private UserService userService;
     @Autowired
-    UserInfoService userInfoService;
+    private WeatherService weatherService;
     @Autowired
-    WeatherService weatherService;
+    private YoutubeService youtubeService;
     @Autowired
-    YoutubeService youtubeService;
+    private RecipeService recipeService;
     @Autowired
-    RecipeService recipeService;
+    private DiceService diceService;
+    @Autowired
+    private RandomPhraseService randomPhraseService;
 
     @Scheduled(cron = "0 0 2 * * *")
-    public void timeForForecast() {
-        updateService.sendForecastToAll(this);
+    public void timeForEverydayForecast() {
+        weatherService.sendForecastToAllSubscribed(this);
     }
 
-    @Scheduled(cron = "0 0 9 * * *")
-    public void timeForWise() {
-        userInfoService.resetAllWiseLimitCount();
-        updateService.sendForecastToAll(this);
+    @Scheduled(cron = "0 0 6 * * *")
+    public void timeForEverydayWise() {
+        userService.resetAllWiseLimitCount();
+        userService.sendWiseToAllSubscribed(this);
     }
 
     @Override
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage()) {
-            // Получаем сообщение, пользователя и ID чата, из которого пришло сообщение
             Message message = update.getMessage();
             User user = message.getFrom();
             String currentChatId = message.getChatId().toString();
@@ -53,94 +54,71 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
             updateService.addUpdate(currentChatId);
 
             // Шанс 3%, что бот скажет коронную фразу в ответ на вызов через 2 минуты
-            if (new Random().nextInt(100) < 3) {
-                Thread randomPhraseThread = new Thread(new RandomPhraseThread(this, update));
-                randomPhraseThread.start();
-            }
+            randomPhraseService.sayRandomPhrase(this, update, 3);
 
             if (message.hasText()) {
                 // Разбиваем полученное сообщение на две части: команду и текст после команды
                 String[] textFromMessage = message.getText().split(" ", 2);
 
                 switch (textFromMessage[0].toLowerCase()) {
-                    // команда /start и добавление информации о новом пользователе
                     case "/start@chatovyonokbot", "/start" -> {
-                        sendMessage(currentChatId, BotConfig.START_TEXT);
-                        userInfoService.addUserInfo(user);
+                        sendMessage(currentChatId, BotMessages.START_TEXT);
+                        userService.addNewUserIfNotExist(user);
                     }
 
-                    // команда /help
                     case "/help@chatovyonokbot", "/help" -> {
-                        sendMessage(currentChatId, BotConfig.HELP_TEXT);
+                        sendMessage(currentChatId, BotMessages.HELP_TEXT);
                     }
 
                     // Случайная мудрость
                     case "/wise@chatovyonokbot", "/wise", "/wi" -> {
-                        sendMessage(currentChatId, wiseService.getRandomWiseForUser(user));
+                        sendMessage(currentChatId, userService.getRandomWiseForUser(user));
                     }
 
                     // Узнать счётчик мудростей у пользователя
                     case "/wise_count@chatovyonokbot", "/wise_count" -> {
-                        sendMessage(currentChatId, wiseService.getWiseCountForUser(user));
+                        sendMessage(currentChatId, userService.getWiseCountForUser(user));
                     }
 
                     // Согласиться получать в чат одну мудрость каждый день
                     case "/wise_subscribe@chatovyonokbot", "/wise_subscribe", "/wise_sub" -> {
-                        updateService.agreeToGetWise(currentChatId);
-                        sendMessage(currentChatId, "Лады! Отныне я буду присылать в сей чат одну случайную мудрость ежедённо!\n\n"
-                            + "Чтобы отказать от этой затеи, наберите команду /wise_unsubscribe.");
+                        userService.subscribeToWise(currentChatId);
+                        sendMessage(currentChatId, BotMessages.WISE_SUBSCRIPTION_MESSAGE);
                     }
 
                     // Согласиться получать в чат одну мудрость каждый день
                     case "/wise_unsubscribe@chatovyonokbot", "/wise_unsubscribe", "wise_unsub" -> {
-                        updateService.refuseToGetWise(currentChatId);
-                        sendMessage(currentChatId, "Ну, и ладно! Больше не буду присылать мудрости в этот чат.");
+                        userService.unsubscribeFromWise(currentChatId);
+                        sendMessage(currentChatId, BotMessages.WISE_UNSUBSCRIPTION_MESSAGE);
                     }
 
                     // Запрос прогноза погоды по городу
                     case "/weather@chatovyonokbot", "/weather", "/we" -> {
-                        String response;
-                        try {
-                            response = weatherService.getWeather(textFromMessage[1].trim());
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            response = "Ой-ой! Пустой запрос! Напишите после команды название города. " +
-                                    "\n\nНапример: /weather Иркутск";
+                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
+                            sendMessage(currentChatId, weatherService.getFullWeatherForecast(textFromMessage[1].trim()));
+                        } else {
+                            sendMessage(currentChatId, BotMessages.WEATHER_EMPTY_REQUEST_MESSAGE);
                         }
-
-                        sendMessage(currentChatId, response);
                     }
 
                     // Узнать общее количество мудростей
                     case "/wise_number@chatovyonokbot", "/wise_number" -> {
-                        String messageToSend =
-                                "Всего я знаю пословиц, прибауток, поговорок, речений, присловий, чистоговорок и поверий: "
-                                        + wiseService.getProverbCount()
-                                        + " шт.\n\n" +
-                                        "Взял их из книги Владимира Ивановича Даля «Пословицы русского народа» 1862 года.";
-                        sendMessage(currentChatId, messageToSend);
+                        sendMessage(currentChatId, userService.howManyWisesDoesBotKnow());
                     }
 
                     // Согласие на получения прогноза погоды определённого города каждый день в определённый чат
                     case "/weather_subscribe@chatovyonokbot", "/weather_subscribe", "/weather_sub" -> {
-                        String response;
-                        try {
-                            updateService.addCityAndAgreeToGetForecast(currentChatId, textFromMessage[1].trim());
-                            response = "Ура! Теперь рано-рано утром я буду присылать в сей чат прогноз погоды для города " +
-                                    textFromMessage[1].trim() + ".\n\n" +
-                                    "Чтобы отказать от этой затеи, наберите команду /weather_unsubscribe.";
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            response = "М-да... Пустой запрос! Напишите после команды название города, " +
-                                    "чтобы я присылал прогноз для него каждое утро. \n\n" +
-                                    "Например, /weather_subscribe Иркутск";
+                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
+                            weatherService.subscribeToWeather(this, currentChatId, textFromMessage[1].trim());
+                        } else {
+                            sendMessage(currentChatId, BotMessages.WEATHER_SUBSCRIPTION_EMPTY_REQUEST_MESSAGE);
                         }
-
-                        sendMessage(currentChatId, response);
                     }
 
                     // Отказ на прогноз погоды каждый день
                     case "/weather_unsubscribe@chatovyonokbot", "/weather_unsubscribe" -> {
-                        updateService.refuseToGetForecast(currentChatId);
-                        sendMessage(currentChatId, "Ладно! Поднесь не буду присылать сюда прогноз погоды ежедённо.");
+                        weatherService.unsubscribeFromWeather(currentChatId);
+                        sendMessage(currentChatId, BotMessages.WEATHER_UNSUBSCRIPTION_MESSAGE);
                     }
 
                     // Случайный рецепт
@@ -155,41 +133,29 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
                     // Поиск видео из Youtube по ключевым словам
                     case "/youtube@chatovyonokbot", "/youtube" -> {
-                        String response;
-                        try {
-                            response = youtubeService.getYoutubeVideo(textFromMessage[1]);
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            response = "Ба! Пустой запрос! Напишите ключевые слова после команды для поиска видео!" +
-                                    "\n\nНапример: /youtube как сделать белый квас";
+                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
+                            sendMessage(currentChatId, youtubeService.getYoutubeVideo(textFromMessage[1]));
+                        } else {
+                            sendMessage(currentChatId, BotMessages.YOUTUBE_EMPTY_REQUEST_MESSAGE);
                         }
-                        sendMessage(currentChatId, response);
                     }
 
                     // Узнать от бота случаный ответ на вопрос типа да-нет
                     case "/answer@chatovyonokbot", "/answer" -> {
-                        int randomAnswerNumber = new Random().nextInt(BotConfig.RANDOM_ANSWERS.length);
-                        sendMessage(currentChatId, "Отвечаю: " + BotConfig.RANDOM_ANSWERS[randomAnswerNumber]);
+                        int randomAnswerNumber = new Random().nextInt(BotMessages.RANDOM_ANSWERS.length);
+                        sendMessage(currentChatId, "Отвечаю: " + BotMessages.RANDOM_ANSWERS[randomAnswerNumber]);
                     }
 
                     // Кинуть кубик от 1 до 6 (или другое число)
                     case "/dice@chatovyonokbot", "/dice" -> {
-                        if (textFromMessage.length >= 2) {
-                            try {
-                                int range = Integer.parseInt(textFromMessage[1].trim());
-                                if (range > 0) {
-                                    Thread diceThread = new Thread(new DiceThread(this, update, range));
-                                    diceThread.start();
-                                } else {
-                                    sendMessage(currentChatId, "@" + user.getUserName() +
-                                            ", вы балда? Число должно быть больше нуля!");
-                                }
-                            } catch (NumberFormatException e) {
-                                sendMessage(currentChatId, "Батюшки! Написано не число! или слишком большое число! " +
-                                        "Напишите после /dice целое число меньше двух миллиардов.");
+                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
+                            if (BotUtils.isTextInteger(textFromMessage[1])) {
+                                diceService.dice(this, update, Integer.parseInt(textFromMessage[1]));
+                            } else {
+                                sendMessage(currentChatId, BotMessages.DICE_ERROR_MESSAGE);
                             }
                         } else {
-                            Thread diceThread = new Thread(new DiceThread(this, update, 6));
-                            diceThread.start();
+                            diceService.dice(this, update, 6);
                         }
                     }
                 }
@@ -203,16 +169,20 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                     .chatId(chatId)
                     .text(message)
                     .build());
-        } catch (TelegramApiException e) {}
+        } catch (TelegramApiException e) {
+            System.out.println(e);
+        }
     }
 
     @Override
     public String getBotUsername() {
-        return BotConfig.BOT_NAME;
+        return BotKeysConfig.BOT_NAME;
     }
 
     @Override
     public String getBotToken() {
-        return BotConfig.BOT_TOKEN;
+        return BotKeysConfig.BOT_TOKEN;
     }
+
+
 }

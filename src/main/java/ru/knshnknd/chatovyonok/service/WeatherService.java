@@ -5,46 +5,99 @@ import com.github.prominence.openweathermap.api.enums.Language;
 import com.github.prominence.openweathermap.api.enums.UnitSystem;
 import com.github.prominence.openweathermap.api.exception.NoDataFoundException;
 import com.github.prominence.openweathermap.api.model.forecast.*;
+import com.github.prominence.openweathermap.api.model.forecast.Location;
 import com.github.prominence.openweathermap.api.model.weather.*;
-import com.github.prominence.openweathermap.api.model.weather.Location;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.knshnknd.chatovyonok.bot.BotConfig;
+import org.springframework.transaction.annotation.Transactional;
+import ru.knshnknd.chatovyonok.bot.BotMessages;
+import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
+import ru.knshnknd.chatovyonok.dao.enitites.WeatherSubscription;
+import ru.knshnknd.chatovyonok.dao.repositories.WeatherSubscriptionRepository;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WeatherService {
-    // Формат времени
-    final static String TIME_PATTERN = "HH:mm";
 
-    // Узнать погоду и прогноз
-    public String getWeather(String cityName) {
-        String result = "";
-        OpenWeatherMapClient openWeatherClient = new OpenWeatherMapClient(BotConfig.WEATHER_API_KEY);
+    @Autowired
+    private OpenWeatherMapClient openWeatherClient;
+    @Autowired
+    private WeatherSubscriptionRepository weatherSubscriptionRepository;
 
+    private final int HOURS_FOR_FORECAST_X_3 = 3;
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+    public String getFullWeatherForecast(String cityName) {
+        return getWeatherForecastForNow(cityName) + "\n\n" + getWeatherForecastFor9Hours(cityName);
+    }
+    @Transactional
+    public void addNewUserWeatherIfNotExist(String chatId) {
+        Optional<WeatherSubscription> userWeatherOptional = weatherSubscriptionRepository.findUserWeatherByChatId(chatId);
+        if (userWeatherOptional.isEmpty()) {
+            WeatherSubscription weatherSubscription = new WeatherSubscription(chatId, Boolean.FALSE, "");
+            weatherSubscriptionRepository.save(weatherSubscription);
+        }
+    }
+    @Transactional
+    public void subscribeToWeather(ChatovyonokBot bot, String chatId, String cityName) {
+        Optional<WeatherSubscription> userWeatherOptional = weatherSubscriptionRepository.findUserWeatherByChatId(chatId);
+        if (userWeatherOptional.isPresent()) {
+            WeatherSubscription weatherSubscription = userWeatherOptional.get();
+            weatherSubscription.setActive(Boolean.TRUE);
+            weatherSubscription.setWeatherCity(cityName.trim());
+            weatherSubscriptionRepository.save(weatherSubscription);
+            bot.sendMessage(chatId, "Ура! Теперь рано-рано утром я буду присылать в сей чат прогноз погоды для города " +
+                    cityName + ". К сожалению, пока что один прогноз на один чат. Новая подписка перезапишет старую, но я скоро это исправлю.\n\n" +
+                    "Чтобы отказать от этой затеи, наберите команду /weather_unsubscribe.");
+        } else {
+            addNewUserWeatherIfNotExist(chatId);
+            subscribeToWeather(bot, chatId, cityName);
+        }
+    }
+
+    @Transactional
+    public void unsubscribeFromWeather(String chatId) {
+        Optional<WeatherSubscription> userWeatherOptional = weatherSubscriptionRepository.findUserWeatherByChatId(chatId);
+        if (userWeatherOptional.isPresent()) {
+            WeatherSubscription weatherSubscription = userWeatherOptional.get();
+            weatherSubscription.setActive(Boolean.FALSE);
+            weatherSubscriptionRepository.save(weatherSubscription);
+        } else {
+            addNewUserWeatherIfNotExist(chatId);
+            unsubscribeFromWeather(chatId);
+        }
+    }
+
+    @Transactional
+    public void sendForecastToAllSubscribed(ChatovyonokBot bot) {
+        List<WeatherSubscription> weatherSubscriptionList = weatherSubscriptionRepository.findUserWeatherByIsActive(Boolean.TRUE);
+        for (WeatherSubscription weatherSubscription : weatherSubscriptionList) {
+            bot.sendMessage(weatherSubscription.getChatId(), getFullWeatherForecast(weatherSubscription.getWeatherCity()));
+        }
+    }
+
+    private String getWeatherForecastForNow(String cityName) {
         try {
             final Weather weather =
                     openWeatherClient
-                    .currentWeather()
-                    .single()
-                    .byCityName(cityName)
-                    .language(Language.RUSSIAN)
-                    .unitSystem(UnitSystem.METRIC)
-                    .retrieve()
-                    .asJava();
-
-            // Локализация и форматирование времени
-            Location location = weather.getLocation();
-            int seconds = location.getZoneOffset().getTotalSeconds();
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
+                            .currentWeather()
+                            .single()
+                            .byCityName(cityName)
+                            .language(Language.RUSSIAN)
+                            .unitSystem(UnitSystem.METRIC)
+                            .retrieve()
+                            .asJava();
 
             // Пишем погоду на данный момент
-            result =
-                    "Погода в городе "
+            return "Погода в городе "
                             + weather.getLocation().getName()
                             + " на "
-                            + timeFormatter.format(weather.getCalculationTime().plusSeconds(seconds))
+                            + timeFormatter.format(getCorrectTemporalAccessorForWeather(weather))
                             + ": температура "
                             + weather.getTemperature().getValue()
                             + "°C, влажность "
@@ -54,42 +107,43 @@ public class WeatherService {
                             + " м/c, "
                             + weather.getWeatherState().getDescription() + ".";
 
-            // Рассвет и закат (опционально)
-            /*
-            result += "\n\nРассвет в " + timeFormatter.format(location.getSunriseTime().plusSeconds(seconds))
-                    + "\nЗакат в "  + timeFormatter.format(location.getSunsetTime().plusSeconds(seconds));
-             */
-
-            // Прогноз на 9 часов (по прогнозу на каждые 3 часа)
-            StringBuilder stringBuilder = new StringBuilder("\n\nПрогноз на ближайшие 9 часов:\n");
-            final Forecast forecast =
-                    openWeatherClient
-                    .forecast5Day3HourStep()
-                    .byCityName(cityName)
-                    .language(Language.RUSSIAN)
-                    .unitSystem(UnitSystem.METRIC)
-                    .count(3)
-                    .retrieve()
-                    .asJava();
-
-            List<WeatherForecast> weathers = forecast.getWeatherForecasts();
-
-            for (WeatherForecast weatherForecast : weathers) {
-                stringBuilder.append("· В ")
-                        .append(timeFormatter.format(weatherForecast.getForecastTime().plusSeconds(seconds)))
-                        .append(": ")
-                        .append(weatherForecast.getWeatherState().getDescription())
-                        .append(", ")
-                        .append(weatherForecast.getTemperature().getValue())
-                        .append("°C.\n");
-            }
-
-            // Добавляем прогноз к основному прогнозу
-            result += stringBuilder.toString();
         } catch (NoDataFoundException e) {
-            return "Ох! Неправильно написано название города для прогноза погоды.";
+            return BotMessages.WEATHER_CITY_ERROR;
         }
+    }
 
-        return result;
+    private String getWeatherForecastFor9Hours(String cityName) {
+        StringBuilder stringBuilder = new StringBuilder("Прогноз на ближайшие " + HOURS_FOR_FORECAST_X_3 * 3 + ": часов:\n");
+
+        final Forecast forecast =
+                openWeatherClient
+                        .forecast5Day3HourStep()
+                        .byCityName(cityName)
+                        .language(Language.RUSSIAN)
+                        .unitSystem(UnitSystem.METRIC)
+                        .count(HOURS_FOR_FORECAST_X_3)
+                        .retrieve()
+                        .asJava();
+
+        List<WeatherForecast> weathers = forecast.getWeatherForecasts();
+
+        for (WeatherForecast weatherForecast : weathers) {
+            stringBuilder.append("· В ")
+                    .append(timeFormatter.format(getCorrectTemporalAccessorForForecast(weatherForecast.getForecastTime(), forecast.getLocation())))
+                    .append(": ")
+                    .append(weatherForecast.getWeatherState().getDescription())
+                    .append(", ")
+                    .append(weatherForecast.getTemperature().getValue())
+                    .append("°C.\n");
+        }
+        return stringBuilder.toString();
+    }
+
+    private TemporalAccessor getCorrectTemporalAccessorForWeather(Weather weather) {
+        return weather.getCalculationTime().plusSeconds(weather.getLocation().getZoneOffset().getTotalSeconds());
+    }
+
+    private TemporalAccessor getCorrectTemporalAccessorForForecast(LocalDateTime localDateTime, Location location) {
+        return localDateTime.plusSeconds(location.getZoneOffset().getTotalSeconds());
     }
 }
