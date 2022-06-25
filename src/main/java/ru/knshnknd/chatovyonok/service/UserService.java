@@ -155,7 +155,6 @@ public class UserService {
         }
     }
 
-
     @Transactional
     public void addNewWiseSubscriptionIfNotExist(String chatId) {
         Optional<WiseSubscription> wiseSubscriptionOptional = wiseSubscriptionRepository.findWiseSubscriptionByChatId(chatId);

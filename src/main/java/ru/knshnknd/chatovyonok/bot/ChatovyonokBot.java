@@ -140,7 +140,7 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                         }
                     }
 
-                    // Узнать от бота случаный ответ на вопрос типа да-нет
+                    // Узнать от бота случайный ответ на вопрос типа да-нет
                     case "/answer@chatovyonokbot", "/answer" -> {
                         int randomAnswerNumber = new Random().nextInt(BotMessages.RANDOM_ANSWERS.length);
                         sendMessage(currentChatId, "Отвечаю: " + BotMessages.RANDOM_ANSWERS[randomAnswerNumber]);
