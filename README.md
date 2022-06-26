@@ -1,4 +1,13 @@
-Народный телеграм-бот на Java. Попробовать: t.me/ChatovyonokBot
+Телеграм-бот на Java "Чатовёнок", который может:
+- составить прогноз погоды.
+- прислать первое по релевантности видео из YouTube по ключевым словам.
+- прислать поговорку из книги Даля и вести счётчик "мудрости" для каждого пользователя.
+
+Бот построен на: Spring Boot, Spring Data JPA, MySQL Driver, Telegram Bot API, Google YouTube Data API, OpenWeatherMap API, JSoup. Бот упакован в Docker-контейнер и запущен на личном ВПС.
+
+Попробовать: t.me/ChatovyonokBot
+
+![image](https://user-images.githubusercontent.com/99965044/175784997-e4ed37f1-0d70-4894-a2ad-75d368afa87e.png)
 
 В домах живут домовые, а в чатах  — чатовые. 
 
