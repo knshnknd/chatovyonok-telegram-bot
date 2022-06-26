@@ -1,10 +1,10 @@
 package ru.knshnknd.chatovyonok.bot;
 
 public class BotKeysConfig {
-    final public static String BOT_TOKEN = "";
-    final public static String BOT_NAME = "@ChatovyonokBot";
+    public static final String BOT_TOKEN = "";
+    public static final String BOT_NAME = "@ChatovyonokBot";
 
-    final public static String WEATHER_API_KEY = "";
+    public static final String WEATHER_API_KEY = "";
 
-    final public static String YOUTUBE_API_KEY = "";
+    public static final String YOUTUBE_API_KEY = "";
 }

@@ -1,11 +1,14 @@
 package ru.knshnknd.chatovyonok.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
 
 @Service
 public class DiceService {
-    public void dice(ChatovyonokBot bot, org.telegram.telegrambots.meta.api.objects.Update update, int range) {
+
+    public void dice(ChatovyonokBot bot, Update update, int range) {
         String chatId = String.valueOf(update.getMessage().getChatId());
         String username = update.getMessage().getFrom().getUserName();
 

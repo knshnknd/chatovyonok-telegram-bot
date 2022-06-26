@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
+@Transactional
 public class RecipeService {
 
     @Autowired
@@ -19,12 +20,10 @@ public class RecipeService {
     private YoutubeService youtubeService;
 
     // Получить случайный рецепт
-    @Transactional
     public String getRandomRecipe() {
-        Long randomNumber = (long) new Random().nextInt(getRecipesNumber());
-        Optional<Recipe> recipeEntityOptional = recipeRepository.findById(randomNumber + 1);
-
-        if (recipeEntityOptional.isPresent()) {
+        if (getRecipesNumber() > 0) {
+            Long randomNumber = (long) new Random().nextInt(getRecipesNumber());
+            Optional<Recipe> recipeEntityOptional = recipeRepository.findById(randomNumber + 1);
             Recipe recipe = recipeEntityOptional.get();
             return getFormatRecipe(recipe);
         } else {
@@ -69,10 +68,6 @@ public class RecipeService {
 
     private int getRecipesNumber() {
         List<Recipe> recipeList = recipeRepository.findAll();
-        if (recipeList.isEmpty()) {
-            return 0;
-        } else {
-            return recipeList.size();
-        }
+        return recipeList.size();
     }
 }

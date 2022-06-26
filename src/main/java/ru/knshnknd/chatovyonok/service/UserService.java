@@ -23,6 +23,7 @@ import java.util.Random;
 // Пока что пользователи завязаны только на счётчике мудрости, поэтому один сервис использует две таблицы... В будущем нужно сделать декомпозицию
 
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -60,7 +61,6 @@ public class UserService {
     }
 
     // Случайная мудрость для пользователя
-    @Transactional
     public String getRandomWiseForUser(User user) {
         Optional<UserOfBot> userOfBotOptional = userOfBotRepository.findUserInfoByUserId(user.getId());
 
@@ -104,7 +104,6 @@ public class UserService {
     }
 
     // Получить счётчик мудрости у пользователя
-    @Transactional
     public String getWiseCountForUser(org.telegram.telegrambots.meta.api.objects.User user) {
         Optional<UserOfBot> userOfBotOptional = userOfBotRepository.findUserInfoByUserId(user.getId());
 
@@ -119,7 +118,6 @@ public class UserService {
     }
 
     // Обнулить счётчик лимита мудрости на 0 для всех
-    @Transactional
     public void resetAllWiseLimitCount() {
         List<UserOfBot> userOfBotList = userOfBotRepository.findAll();
         for (UserOfBot userOfBot : userOfBotList) {
@@ -129,7 +127,6 @@ public class UserService {
     }
 
     // Настройки мудростей
-    @Transactional
     public void subscribeToWise(String chatId) {
         Optional<WiseSubscription> wiseSubscriptionOptional = wiseSubscriptionRepository.findWiseSubscriptionByChatId(chatId);
         if (wiseSubscriptionOptional.isPresent()) {
@@ -142,7 +139,6 @@ public class UserService {
         }
     }
 
-    @Transactional
     public void unsubscribeFromWise(String chatId) {
         Optional<WiseSubscription> wiseSubscriptionOptional = wiseSubscriptionRepository.findWiseSubscriptionByChatId(chatId);
         if (wiseSubscriptionOptional.isPresent()) {
@@ -155,7 +151,6 @@ public class UserService {
         }
     }
 
-    @Transactional
     public void addNewWiseSubscriptionIfNotExist(String chatId) {
         Optional<WiseSubscription> wiseSubscriptionOptional = wiseSubscriptionRepository.findWiseSubscriptionByChatId(chatId);
         if (wiseSubscriptionOptional.isEmpty()) {
@@ -164,7 +159,6 @@ public class UserService {
         }
     }
 
-    @Transactional
     public void addNewUserIfNotExist(User user) {
         Optional<UserOfBot> userOfBotOptional = userOfBotRepository.findUserInfoByUserId(user.getId());
         if (userOfBotOptional.isEmpty()) {
@@ -173,7 +167,6 @@ public class UserService {
         }
     }
 
-    @Transactional
     public void sendWiseToAllSubscribed(ChatovyonokBot bot) {
         List<WiseSubscription> wiseSubscriptionList = wiseSubscriptionRepository.findWiseSubscriptionByIsActive(Boolean.TRUE);
         for (WiseSubscription wiseSubscription : wiseSubscriptionList) {

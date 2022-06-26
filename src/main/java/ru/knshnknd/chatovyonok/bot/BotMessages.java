@@ -19,11 +19,11 @@ dice - Подкинуть кубик от 1 до указанного числа
  */
 
 public class BotMessages {
-    final public static String START_TEXT =
+    public static final String START_TEXT =
             "Здравствуйте! Я чатовой, меня зовут Кузькой, можно Кузенькой. Я маленький ещё, семь веков всего, восьмой пошёл.\n\n" +
                     "Используйте команду /help, чтобы узнать, что я умею!";
 
-    final public static String HELP_TEXT = """
+    public static final String HELP_TEXT = """
             В домах живут домовые, а в чатах  — чатовые! Вот, что я умею:
 
             /wise – Скажу случайную мудрость из книги Даля «Пословицы русского народа» 1862 года. Короткий вариант: /wi.
@@ -50,39 +50,39 @@ public class BotMessages {
             Например: /dice 50
             """;
 
-    final public static String WISE_LIMIT_MESSAGE = "Ваш лимит на 3 мудрости в день исчерпан! Приходите за новой мудростью завтра.";
+    public static final String WISE_LIMIT_MESSAGE = "Ваш лимит на 3 мудрости в день исчерпан! Приходите за новой мудростью завтра.";
 
-    final public static String WISE_SUBSCRIPTION_MESSAGE = "Лады! Отныне я буду присылать в сей чат одну случайную мудрость ежедённо!\n\n"
+    public static final String WISE_SUBSCRIPTION_MESSAGE = "Лады! Отныне я буду присылать в сей чат одну случайную мудрость ежедённо!\n\n"
             + "Чтобы отказать от этой затеи, наберите команду /wise_unsubscribe.";
 
-    final public static String WISE_UNSUBSCRIPTION_MESSAGE = "Ну, и ладно! Больше не буду присылать мудрости в этот чат.";
+    public static final String WISE_UNSUBSCRIPTION_MESSAGE = "Ну, и ладно! Больше не буду присылать мудрости в этот чат.";
 
-    final public static String WEATHER_EMPTY_REQUEST_MESSAGE = "Ой-ой! Пустой запрос! Напишите после команды название города. " +
+    public static final String WEATHER_EMPTY_REQUEST_MESSAGE = "Ой-ой! Пустой запрос! Напишите после команды название города. " +
             "\n\nНапример: /weather Иркутск";
 
-    final public static String WEATHER_SUBSCRIPTION_EMPTY_REQUEST_MESSAGE = "М-да... Пустой запрос! Напишите после команды название города, " +
+    public static final String WEATHER_SUBSCRIPTION_EMPTY_REQUEST_MESSAGE = "М-да... Пустой запрос! Напишите после команды название города, " +
             "чтобы я присылал прогноз для него каждое утро. \n\n" +
             "Например, /weather_subscribe Иркутск";
 
-    final public static String WEATHER_UNSUBSCRIPTION_MESSAGE = "Ладно! Поднесь не буду присылать сюда прогноз погоды ежедённо.";
+    public static final String WEATHER_UNSUBSCRIPTION_MESSAGE = "Ладно! Поднесь не буду присылать сюда прогноз погоды ежедённо.";
 
-    final public static String WEATHER_CITY_ERROR = "Ох! Неправильно написано название города для прогноза погоды.";
+    public static final String WEATHER_CITY_ERROR = "Ох! Неправильно написано название города для прогноза погоды.";
 
-    final public static String DICE_ERROR_MESSAGE = "Батюшки! Написано не число! или слишком большое число! \n\n" +
+    public static final String DICE_ERROR_MESSAGE = "Батюшки! Написано не число! или слишком большое число! \n\n" +
             "Напишите после /dice целое число меньше двух миллиардов.";
 
-    final public static String YOUTUBE_EMPTY_REQUEST_MESSAGE = "Ба! Пустой запрос! Напишите ключевые слова после команды для поиска видео!" +
+    public static final String YOUTUBE_EMPTY_REQUEST_MESSAGE = "Ба! Пустой запрос! Напишите ключевые слова после команды для поиска видео!" +
             "\n\nНапример: /youtube как сделать белый квас";
 
     // Случайные ответы на вопросы да-нет
-    final public static String[] RANDOM_ANSWERS = {
+    public static final String[] RANDOM_ANSWERS = {
             "да.", "нет.", "не сомневаюсь!", "абсолютно да!", "шансы есть...",
             "не могу сказать.", "вряд ли.", "похоже на то!", "даже не надейтесь!",
             "нетушки!", "никак нет.", "даю добро!", "даже не рассчитывай."
     };
 
     // Случайные фразы, которые может сказать бот в чате с шансом 3% после каждого вызова
-    final public static String[] RANDOM_PHRASES = {
+    public static final String[] RANDOM_PHRASES = {
             "Вот тетёха, недотёпа непонятливая. Я не домовой, я — чатовой!",
             "Ох, беда-беда, огорчение. Ну негде голову приклонить! Ну, и чат у вас, конечно...",
             "Работать буду по совести. За хозяйство не бойся. Конюшня есть?",

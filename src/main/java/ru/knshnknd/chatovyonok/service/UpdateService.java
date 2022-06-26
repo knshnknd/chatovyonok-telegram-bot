@@ -9,13 +9,13 @@ import ru.knshnknd.chatovyonok.dao.repositories.UpdateRepository;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UpdateService {
     @Autowired
     private UpdateRepository updateRepository;
 
     // Добавляем +1 к update_count у чата по chat_id в БД при каждом вызове бота,
     // если такого кортежа нет, то добавляем новый
-    @Transactional
     public void addUpdate(String chatId) {
             Optional<Update> updateEntityOptional = updateRepository.findUpdateByChatId(chatId);
 

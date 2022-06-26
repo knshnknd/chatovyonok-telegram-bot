@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class WeatherService {
 
     @Autowired
@@ -35,7 +36,7 @@ public class WeatherService {
     public String getFullWeatherForecast(String cityName) {
         return getWeatherForecastForNow(cityName) + "\n\n" + getWeatherForecastFor9Hours(cityName);
     }
-    @Transactional
+
     public void addNewUserWeatherIfNotExist(String chatId) {
         Optional<WeatherSubscription> userWeatherOptional = weatherSubscriptionRepository.findUserWeatherByChatId(chatId);
         if (userWeatherOptional.isEmpty()) {
@@ -43,7 +44,7 @@ public class WeatherService {
             weatherSubscriptionRepository.save(weatherSubscription);
         }
     }
-    @Transactional
+
     public void subscribeToWeather(ChatovyonokBot bot, String chatId, String cityName) {
         Optional<WeatherSubscription> userWeatherOptional = weatherSubscriptionRepository.findUserWeatherByChatId(chatId);
         if (userWeatherOptional.isPresent()) {
@@ -60,7 +61,6 @@ public class WeatherService {
         }
     }
 
-    @Transactional
     public void unsubscribeFromWeather(String chatId) {
         Optional<WeatherSubscription> userWeatherOptional = weatherSubscriptionRepository.findUserWeatherByChatId(chatId);
         if (userWeatherOptional.isPresent()) {
@@ -73,7 +73,6 @@ public class WeatherService {
         }
     }
 
-    @Transactional
     public void sendForecastToAllSubscribed(ChatovyonokBot bot) {
         List<WeatherSubscription> weatherSubscriptionList = weatherSubscriptionRepository.findUserWeatherByIsActive(Boolean.TRUE);
         for (WeatherSubscription weatherSubscription : weatherSubscriptionList) {
