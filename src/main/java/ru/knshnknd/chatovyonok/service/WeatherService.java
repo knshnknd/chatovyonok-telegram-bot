@@ -112,7 +112,7 @@ public class WeatherService {
     }
 
     private String getWeatherForecastFor9Hours(String cityName) {
-        StringBuilder stringBuilder = new StringBuilder("Прогноз на ближайшие " + HOURS_FOR_FORECAST_X_3 * 3 + ": часов:\n");
+        StringBuilder stringBuilder = new StringBuilder("Прогноз на ближайшие " + HOURS_FOR_FORECAST_X_3 * 3 + " часов:\n");
 
         final Forecast forecast =
                 openWeatherClient
