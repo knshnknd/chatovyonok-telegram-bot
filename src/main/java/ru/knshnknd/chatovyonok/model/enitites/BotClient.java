@@ -1,31 +1,30 @@
-package ru.knshnknd.chatovyonok.dao.enitites;
+package ru.knshnknd.chatovyonok.model.enitites;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity(name = "user")
-public class UserOfBot {
+public class BotClient {
 
     @Id
     private Long userId;
 
-    @Column
     private String username;
 
-    @Column
     private Long wiseCount;
 
-    @Column
     private Long wiseLimitCount;
 
-    public UserOfBot() {}
+    private boolean canAttack;
 
-    public UserOfBot(Long userId, String username, Long wiseCount, Long wiseLimitCount) {
+    public BotClient() {}
+
+    public BotClient(Long userId, String username, Long wiseCount, Long wiseLimitCount) {
         this.userId = userId;
         this.username = username;
         this.wiseCount = wiseCount;
         this.wiseLimitCount = wiseLimitCount;
+        this.canAttack = true;
     }
 
     public Long getUserId() {
@@ -58,5 +57,13 @@ public class UserOfBot {
 
     public void setWiseLimitCount(Long wiseLimitCount) {
         this.wiseLimitCount = wiseLimitCount;
+    }
+
+    public boolean isCanAttack() {
+        return canAttack;
+    }
+
+    public void setCanAttack(boolean canAttack) {
+        this.canAttack = canAttack;
     }
 }

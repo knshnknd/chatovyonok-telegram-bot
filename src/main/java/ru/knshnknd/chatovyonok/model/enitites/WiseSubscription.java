@@ -1,9 +1,9 @@
-package ru.knshnknd.chatovyonok.dao.enitites;
+package ru.knshnknd.chatovyonok.model.enitites;
 
 import javax.persistence.*;
 
 @Entity
-public class WeatherSubscription {
+public class WiseSubscription {
 
     @Id
     @Column
@@ -16,16 +16,12 @@ public class WeatherSubscription {
     @Column
     private Boolean isActive;
 
-    @Column(columnDefinition = "TEXT")
-    private String weatherCity;
-
-    public WeatherSubscription() {
+    public WiseSubscription() {
     }
 
-    public WeatherSubscription(String chatId, Boolean isActive, String weatherCity) {
+    public WiseSubscription(String chatId, Boolean isActive) {
         this.chatId = chatId;
         this.isActive = isActive;
-        this.weatherCity = weatherCity;
     }
 
     public Long getId() {
@@ -44,19 +40,11 @@ public class WeatherSubscription {
         this.chatId = chatId;
     }
 
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
+    public void setIsActive(Boolean active) {
         isActive = active;
-    }
-
-    public String getWeatherCity() {
-        return weatherCity;
-    }
-
-    public void setWeatherCity(String weatherCity) {
-        this.weatherCity = weatherCity;
     }
 }

@@ -1,4 +1,4 @@
-package ru.knshnknd.chatovyonok.dao.enitites;
+package ru.knshnknd.chatovyonok.model.enitites;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

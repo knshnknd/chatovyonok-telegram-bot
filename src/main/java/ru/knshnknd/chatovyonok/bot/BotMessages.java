@@ -57,6 +57,8 @@ public class BotMessages {
 
     public static final String WISE_UNSUBSCRIPTION_MESSAGE = "Ну, и ладно! Больше не буду присылать мудрости в этот чат.";
 
+    public static final String WISE_ATTACK_EMPTY_REQUEST = "Пустой запрос! Напишите после команды имя пользователя для атаки. Пример: /wise_attack @durov. ";
+
     public static final String WEATHER_EMPTY_REQUEST_MESSAGE = "Ой-ой! Пустой запрос! Напишите после команды название города. " +
             "\n\nНапример: /weather Иркутск";
 

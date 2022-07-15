@@ -3,8 +3,8 @@ package ru.knshnknd.chatovyonok.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.knshnknd.chatovyonok.dao.enitites.Recipe;
-import ru.knshnknd.chatovyonok.dao.repositories.RecipeRepository;
+import ru.knshnknd.chatovyonok.model.enitites.Recipe;
+import ru.knshnknd.chatovyonok.model.repositories.RecipeRepository;
 
 import java.util.List;
 import java.util.Optional;

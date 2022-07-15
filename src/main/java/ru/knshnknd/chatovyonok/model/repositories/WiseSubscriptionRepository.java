@@ -1,7 +1,7 @@
-package ru.knshnknd.chatovyonok.dao.repositories;
+package ru.knshnknd.chatovyonok.model.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.knshnknd.chatovyonok.dao.enitites.WiseSubscription;
+import ru.knshnknd.chatovyonok.model.enitites.WiseSubscription;
 
 import java.util.List;
 import java.util.Optional;
