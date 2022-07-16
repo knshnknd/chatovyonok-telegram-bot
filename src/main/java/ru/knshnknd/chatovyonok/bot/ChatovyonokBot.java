@@ -39,6 +39,8 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
     private RandomPhraseService randomPhraseService;
     @Autowired
     private WikimediaImageService wikimediaImageService;
+    @Autowired
+    private ChronicleService chronicleService;
 
     @Scheduled(cron = "0 0 2 * * *")
     public void timeForEverydayForecast() {
@@ -178,9 +180,17 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                         }
                     }
 
+                    // Случайное русское искусство из Wikimedia Commons
                     case "/art@chatovyonokbot", "/art" -> {
                         wikimediaImageService.getRandomImageFromWikimedia(this, update);
                     }
+
+                    // Случайная строка из летописи
+                    case "/chronicle@chatovyonokbot", "/chronicle" -> {
+                        sendMessage(currentChatId, chronicleService.getRandomChronicleLine());
+                    }
+
+                    case "/test" -> {}
                 }
             }
         }
@@ -203,6 +213,7 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                     .chatId(chatId)
                     .photo(new InputFile(file, file.toString()))
                     .caption(message)
+                    .parseMode("HTML")
                     .build());
         } catch (TelegramApiException e) {
             System.out.println(e);
