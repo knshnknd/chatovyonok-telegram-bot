@@ -1778,6 +1778,5 @@ public class WikimediaCategories {
                 "Viktor_Baturin",
                 "Marie_Bashkirtseff",
                 "Paintings_by_Marie_Bashkirtseff",
-                "Paintings_by_Marie_Bashkirtseff",
     };
 }
