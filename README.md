@@ -8,6 +8,8 @@
 
 Попробовать: t.me/ChatovyonokBot
 
+UPD: Бот больше не использует MySQL Driver, теперь – PostgresSQL.
+
 ![image](https://user-images.githubusercontent.com/99965044/175784997-e4ed37f1-0d70-4894-a2ad-75d368afa87e.png)
 
 В домах живут домовые, а в чатах  — чатовые. 
