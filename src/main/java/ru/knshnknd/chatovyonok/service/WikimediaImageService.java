@@ -8,17 +8,27 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
 import ru.knshnknd.chatovyonok.bot.WikimediaCategories;
+import ru.knshnknd.chatovyonok.model.enitites.ArtSubscription;
+import ru.knshnknd.chatovyonok.model.enitites.WeatherSubscription;
+import ru.knshnknd.chatovyonok.model.repositories.ArtSubscriptionRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
+@Transactional
 @Service
 public class WikimediaImageService {
+
+    @Autowired
+    private ArtSubscriptionRepository artSubscriptionRepository;
 
     @Autowired
     private JSONParser jsonParser;
@@ -29,16 +39,56 @@ public class WikimediaImageService {
     private final String urlWikimediaGetDescriptionOfImageByPageId = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=extmetadata&iiextmetadatafilter=ImageDescription&format=json&pageids=";
     private final String urlWikimediaGetSourceOfImageByPageId = "https://commons.wikimedia.org/w/api.php?action=query&prop=pageimages&piprop=original&format=json&pageids=";
 
-    public void getRandomImageFromWikimedia(ChatovyonokBot bot, Update update) {
+    public void getRandomImageFromWikimedia(ChatovyonokBot bot, String chatId) {
         String randomPage = null;
         try {
             randomPage = getRandomPageIdFromCategory();
             JSONObject jsonObject = getJSONObjectFromPageId(randomPage);
 
-            bot.sendImageWithMessage(update.getMessage().getChatId().toString(), getImageFromPageAsFile(jsonObject),
+            bot.sendImageWithMessage(chatId, getImageFromPageAsFile(jsonObject),
                     getDescriptionOfImageFromPageId(randomPage) + "\n\n<a href=\"" + getURLOfImageByPageID(randomPage) + "\">Источник: Wikimedia Commons</a>");
         } catch (ParseException | IOException e) {
-            bot.sendMessage(update.getMessage().getChatId().toString(), "Ой.. Ошибка!");
+            bot.sendMessage(chatId, "Ой.. Ошибка!");
+        }
+    }
+
+    public void addNewArtSubscriptionIfNotExist(String chatId) {
+        Optional<ArtSubscription> artSubscriptionOptional = artSubscriptionRepository.findArtSubscriptionByChatId(chatId);
+        if (artSubscriptionOptional.isEmpty()) {
+            ArtSubscription artSubscription = new ArtSubscription(chatId, Boolean.FALSE);
+            artSubscriptionRepository.save(artSubscription);
+        }
+    }
+
+    public void subscribeToArt(ChatovyonokBot bot, String chatId) {
+        Optional<ArtSubscription> artSubscriptionOptional = artSubscriptionRepository.findArtSubscriptionByChatId(chatId);
+        if (artSubscriptionOptional.isPresent()) {
+            ArtSubscription artSubscription = artSubscriptionOptional.get();
+            artSubscription.setActive(Boolean.TRUE);
+            artSubscriptionRepository.save(artSubscription);
+            bot.sendMessage(chatId, "Теперь я буду каждый день присылать в этот чат одно случайное произведение искусства, связанное с Россией. Отменить: /art_unsub");
+        } else {
+            addNewArtSubscriptionIfNotExist(chatId);
+            subscribeToArt(bot, chatId);
+        }
+    }
+
+    public void unsubscribeFromArt(String chatId) {
+        Optional<ArtSubscription> artSubscriptionOptional = artSubscriptionRepository.findArtSubscriptionByChatId(chatId);
+        if (artSubscriptionOptional.isPresent()) {
+            ArtSubscription artSubscription = artSubscriptionOptional.get();
+            artSubscription.setActive(Boolean.FALSE);
+            artSubscriptionRepository.save(artSubscription);
+        } else {
+            addNewArtSubscriptionIfNotExist(chatId);
+            unsubscribeFromArt(chatId);
+        }
+    }
+
+    public void sendArtToAllSubscribed(ChatovyonokBot bot) {
+        List<ArtSubscription> artSubscriptionsList = artSubscriptionRepository.findArtSubscriptionByIsActive(Boolean.TRUE);
+        for (ArtSubscription artSubscription : artSubscriptionsList) {
+            getRandomImageFromWikimedia(bot, artSubscription.getChatId());
         }
     }
 
@@ -80,10 +130,12 @@ public class WikimediaImageService {
 
         description = description.equals(title) || (description + ".").equals(title) ? "" : description;
 
-        title = title.replace("jpg", "");
-        title = title.replace("JPG", "");
-        title = title.replace("png", "");
-        title = title.replace("PNG", "");
+        title = title.replace(".jpg", "");
+        title = title.replace(".jpeg", "");
+        title = title.replace(".JPEG", "");
+        title = title.replace(".JPG", "");
+        title = title.replace(".png", "");
+        title = title.replace(".PNG", "");
         title = title.replace("File:", "");
 
         return "<b>" + title + "</b>" + description;

@@ -41,6 +41,8 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
     private WikimediaImageService wikimediaImageService;
     @Autowired
     private ChronicleService chronicleService;
+    @Autowired
+    private AdminService adminService;
 
     @Scheduled(cron = "0 0 2 * * *")
     public void timeForEverydayForecast() {
@@ -52,6 +54,11 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
         botClientService.resetAllWiseLimitCount();
         botClientService.resetAllAttacks();
         botClientService.sendWiseToAllSubscribed(this);
+    }
+
+    @Scheduled(cron = "0 0 9 * * *")
+    public void timeForEverydayArt() {
+        wikimediaImageService.sendArtToAllSubscribed(this);
     }
 
     @Override
@@ -70,16 +77,16 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
             if (message.hasText()) {
                 // Разбиваем полученное сообщение на две части: команду и текст после команды
-                String[] textFromMessage = message.getText().split(" ", 2);
+                String[] messageText = message.getText().split(" ", 2);
 
-                switch (textFromMessage[0].toLowerCase()) {
+                switch (messageText[0].toLowerCase()) {
                     case "/start@chatovyonokbot", "/start" -> {
                         sendMessage(currentChatId, BotMessages.START_TEXT);
                         botClientService.addBotClientIfNotExist(user);
                     }
 
                     case "/help@chatovyonokbot", "/help" -> {
-                        sendMessage(currentChatId, BotMessages.HELP_TEXT);
+                        sendEditedMessage(currentChatId, BotMessages.HELP_TEXT);
                     }
 
                     // Случайная мудрость
@@ -93,21 +100,21 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                     }
 
                     // Согласиться получать в чат одну мудрость каждый день
-                    case "/wise_subscribe@chatovyonokbot", "/wise_subscribe", "/wise_sub", "/ws" -> {
+                    case "/wise_subscribe@chatovyonokbot", "/wise_sub@chatovyonokbot", "/wise_subscribe", "/wise_sub", "/ws" -> {
                         botClientService.subscribeToWise(currentChatId);
                         sendMessage(currentChatId, BotMessages.WISE_SUBSCRIPTION_MESSAGE);
                     }
 
                     // Согласиться получать в чат одну мудрость каждый день
-                    case "/wise_unsubscribe@chatovyonokbot", "/wise_unsubscribe", "wise_unsub", "/wu" -> {
+                    case "/wise_unsubscribe@chatovyonokbot", "/wise_unsub@chatovyonokbot", "/wise_unsubscribe", "wise_unsub", "/wu" -> {
                         botClientService.unsubscribeFromWise(currentChatId);
                         sendMessage(currentChatId, BotMessages.WISE_UNSUBSCRIPTION_MESSAGE);
                     }
 
                     // Запрос прогноза погоды по городу
                     case "/weather@chatovyonokbot", "/weather", "/we" -> {
-                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
-                            sendMessage(currentChatId, weatherService.getFullWeatherForecast(textFromMessage[1].trim()));
+                        if (BotUtils.isTextMessageHasAnyWordsMore(messageText)) {
+                            sendMessage(currentChatId, weatherService.getFullWeatherForecast(messageText[1].trim()));
                         } else {
                             sendMessage(currentChatId, BotMessages.WEATHER_EMPTY_REQUEST_MESSAGE);
                         }
@@ -120,30 +127,30 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
                     // Узнать общее количество мудростей
                     case "/wise_attack@chatovyonokbot", "/wise_attack", "/wa" -> {
-                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
-                            botClientService.wiseAttack(this, update, user, textFromMessage[1]);
+                        if (BotUtils.isTextMessageHasAnyWordsMore(messageText)) {
+                            botClientService.wiseAttack(this, update, user, messageText[1]);
                         } else {
                             sendMessage(currentChatId, BotMessages.WISE_ATTACK_EMPTY_REQUEST);
                         }
                     }
 
                     // Согласие на получения прогноза погоды определённого города каждый день в определённый чат
-                    case "/weather_subscribe@chatovyonokbot", "/weather_subscribe", "/weather_sub", "/wes" -> {
-                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
-                            weatherService.subscribeToWeather(this, currentChatId, textFromMessage[1].trim());
+                    case "/weather_subscribe@chatovyonokbot", "/weather_sub@chatovyonokbot", "/weather_subscribe", "/weather_sub", "/wes" -> {
+                        if (BotUtils.isTextMessageHasAnyWordsMore(messageText)) {
+                            weatherService.subscribeToWeather(this, currentChatId, messageText[1].trim());
                         } else {
                             sendMessage(currentChatId, BotMessages.WEATHER_SUBSCRIPTION_EMPTY_REQUEST_MESSAGE);
                         }
                     }
 
                     // Отказ на прогноз погоды каждый день
-                    case "/weather_unsubscribe@chatovyonokbot", "/weather_unsubscribe", "/weu" -> {
+                    case "/weather_unsubscribe@chatovyonokbot", "/weather_unsub@chatovyonokbot", "/weather_unsubscribe", "/weather_unsub", "/weu" -> {
                         weatherService.unsubscribeFromWeather(currentChatId);
                         sendMessage(currentChatId, BotMessages.WEATHER_UNSUBSCRIPTION_MESSAGE);
                     }
 
                     // Случайный рецепт
-                    case "/recipe@chatovyonokbot", "/recipe" -> {
+                    case "/recipe@chatovyonokbot", "/recipe","/rec" -> {
                         sendMessage(currentChatId, recipeService.getRandomRecipe());
                     }
 
@@ -154,8 +161,8 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
                     // Поиск видео из Youtube по ключевым словам
                     case "/youtube@chatovyonokbot", "/youtube" -> {
-                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
-                            sendMessage(currentChatId, youtubeService.getYoutubeVideo(textFromMessage[1]));
+                        if (BotUtils.isTextMessageHasAnyWordsMore(messageText)) {
+                            sendMessage(currentChatId, youtubeService.getYoutubeVideo(messageText[1]));
                         } else {
                             sendMessage(currentChatId, BotMessages.YOUTUBE_EMPTY_REQUEST_MESSAGE);
                         }
@@ -169,9 +176,9 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
                     // Кинуть кубик от 1 до 6 (или другое число)
                     case "/dice@chatovyonokbot", "/dice" -> {
-                        if (BotUtils.isTextMessageHasAnyWordsMore(textFromMessage)) {
-                            if (BotUtils.isTextInteger(textFromMessage[1])) {
-                                diceService.dice(this, update, Integer.parseInt(textFromMessage[1]));
+                        if (BotUtils.isTextMessageHasAnyWordsMore(messageText)) {
+                            if (BotUtils.isTextInteger(messageText[1])) {
+                                diceService.dice(this, update, Integer.parseInt(messageText[1]));
                             } else {
                                 sendMessage(currentChatId, BotMessages.DICE_ERROR_MESSAGE);
                             }
@@ -182,13 +189,31 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
                     // Случайное русское искусство из Wikimedia Commons
                     case "/art@chatovyonokbot", "/art" -> {
-                        wikimediaImageService.getRandomImageFromWikimedia(this, update);
+                        wikimediaImageService.getRandomImageFromWikimedia(this, currentChatId);
+                    }
+
+                    // Согласие на получения прогноза погоды определённого города каждый день в определённый чат
+                    case "/art_subscribe@chatovyonokbot", "/art_sub@chatovyonokbot", "/art_subscribe", "/art_sub", "/arts" -> {
+                        wikimediaImageService.subscribeToArt(this, currentChatId);
+                    }
+
+                    // Отказ на прогноз погоды каждый день
+                    case "/art_unsubscribe@chatovyonokbot", "/art_unsub@chatovyonokbot", "/art_unsubscribe", "/art_unsub", "/artu" -> {
+                        wikimediaImageService.unsubscribeFromArt(currentChatId);
+                        sendMessage(currentChatId, BotMessages.ART_UNSUBSCRIPTION_MESSAGE);
                     }
 
                     // Случайная строка из летописи
                     case "/chronicle@chatovyonokbot", "/chronicle" -> {
                         sendMessage(currentChatId, chronicleService.getRandomChronicleLine());
                     }
+
+                    // Отправить всем сообщение
+                    case "/chat_id@chatovyonokbot", "/chat_id" -> {
+                        sendMessage(currentChatId, currentChatId);
+                    }
+
+                    // Скрытые команды админки для отправки сообщений через бота + AdminService
 
                     case "/test" -> {}
                 }
@@ -201,6 +226,18 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
             execute(SendMessage.builder()
                     .chatId(chatId)
                     .text(message)
+                    .build());
+        } catch (TelegramApiException e) {
+            System.out.println(e);
+        }
+    }
+
+    public void sendEditedMessage(String chatId, String message) {
+        try {
+            execute(SendMessage.builder()
+                    .chatId(chatId)
+                    .text(message)
+                    .parseMode("HTML")
                     .build());
         } catch (TelegramApiException e) {
             System.out.println(e);

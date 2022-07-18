@@ -8,8 +8,8 @@ import ru.knshnknd.chatovyonok.model.repositories.UpdateRepository;
 
 import java.util.Optional;
 
-@Service
 @Transactional
+@Service
 public class UpdateService {
     @Autowired
     private UpdateRepository updateRepository;

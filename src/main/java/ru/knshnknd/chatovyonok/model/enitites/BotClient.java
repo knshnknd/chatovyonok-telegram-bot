@@ -3,7 +3,7 @@ package ru.knshnknd.chatovyonok.model.enitites;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity(name = "user")
+@Entity
 public class BotClient {
 
     @Id

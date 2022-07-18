@@ -23,8 +23,8 @@ import java.util.Random;
 
 // Пока что пользователи завязаны только на счётчике мудрости, поэтому один сервис использует две таблицы... В будущем нужно сделать декомпозицию
 
-@Service
 @Transactional
+@Service
 public class BotClientService {
 
     @Autowired

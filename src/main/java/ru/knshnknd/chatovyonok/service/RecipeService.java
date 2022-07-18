@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-@Service
 @Transactional
+@Service
 public class RecipeService {
 
     @Autowired
