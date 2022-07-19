@@ -1,5 +1,6 @@
 package ru.knshnknd.chatovyonok.bot;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -22,6 +23,8 @@ import java.util.Random;
 
 @Component
 public class ChatovyonokBot extends TelegramLongPollingBot {
+
+    private static final Logger log = Logger.getLogger(ChatovyonokBot.class);
 
     @Autowired
     private UpdateService updateService;
@@ -76,6 +79,9 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
             randomPhraseService.sayRandomPhrase(this, update, 3);
 
             if (message.hasText()) {
+                log.info(user.getUserName() + " в " + currentChatId + ": " + message);
+                System.out.println(user.getUserName() + " в " + currentChatId + ": " + message);
+
                 // Разбиваем полученное сообщение на две части: команду и текст после команды
                 String[] messageText = message.getText().split(" ", 2);
 
@@ -215,7 +221,8 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
                     // Скрытые команды админки для отправки сообщений через бота + AdminService
 
-                    case "/test" -> {}
+                    // Отправить всем сообщение
+
                 }
             }
         }
@@ -228,7 +235,7 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                     .text(message)
                     .build());
         } catch (TelegramApiException e) {
-            System.out.println(e);
+            sendErrorMessageAndLog(chatId, e);
         }
     }
 
@@ -240,7 +247,7 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                     .parseMode("HTML")
                     .build());
         } catch (TelegramApiException e) {
-            System.out.println(e);
+            sendErrorMessageAndLog(chatId, e);
         }
     }
 
@@ -253,8 +260,19 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                     .parseMode("HTML")
                     .build());
         } catch (TelegramApiException e) {
-            System.out.println(e);
+            sendErrorMessageAndLog(chatId, e);
         }
+    }
+
+    public void sendErrorMessageAndLog(String chatId, Exception e) {
+        try {
+            execute(SendMessage.builder()
+                    .chatId(chatId)
+                    .text("К сожалению, произошла непредвиденная ошибка с выполнением этой команды! " +
+                            "Информация об ошибке уже отправлена разработчикам. \n\nНо всё равно попробуйте ещё раз выполнить эту команду.")
+                    .build());
+            log.error("ID чата:" + chatId + ". Ошибка в боте: " + e);
+        } catch (TelegramApiException ignored) {}
     }
 
     @Override

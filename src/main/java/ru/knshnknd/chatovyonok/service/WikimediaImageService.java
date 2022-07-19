@@ -9,12 +9,11 @@ import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
 import ru.knshnknd.chatovyonok.bot.WikimediaCategories;
 import ru.knshnknd.chatovyonok.model.enitites.ArtSubscription;
-import ru.knshnknd.chatovyonok.model.enitites.WeatherSubscription;
 import ru.knshnknd.chatovyonok.model.repositories.ArtSubscriptionRepository;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +25,8 @@ import java.util.Random;
 @Transactional
 @Service
 public class WikimediaImageService {
+
+    private static final Logger log = Logger.getLogger(WikimediaImageService.class);
 
     @Autowired
     private ArtSubscriptionRepository artSubscriptionRepository;
@@ -88,7 +89,10 @@ public class WikimediaImageService {
     public void sendArtToAllSubscribed(ChatovyonokBot bot) {
         List<ArtSubscription> artSubscriptionsList = artSubscriptionRepository.findArtSubscriptionByIsActive(Boolean.TRUE);
         for (ArtSubscription artSubscription : artSubscriptionsList) {
+            log.info("Отправка икусства для " + artSubscription.getChatId() + " начинается");
             getRandomImageFromWikimedia(bot, artSubscription.getChatId());
+            log.info("Отправка икусства для " + artSubscription.getChatId() + " прошла успешно");
+
         }
     }
 
@@ -138,6 +142,11 @@ public class WikimediaImageService {
         title = title.replace(".PNG", "");
         title = title.replace("File:", "");
 
+        if ((title.length() + description.length()) >= 200) {
+            description = "";
+            title = title.substring(0, 199);
+        }
+
         return "<b>" + title + "</b>" + description;
     }
 
@@ -175,6 +184,8 @@ public class WikimediaImageService {
         JSONObject jsonObject = (JSONObject) jsonParser.parse(getJson);
         JSONObject jsonObject1 = (JSONObject) jsonObject.get("query");
         JSONArray jsonArray = (JSONArray) jsonObject1.get("categorymembers");
+
+        log.info("JSON массив для категории, размер: " + jsonArray.size() + ". Ссылка на категорию: " + urlCategory);
 
         int randomPage = new Random().nextInt(jsonArray.size());
         JSONObject jsonObject2 = (JSONObject) jsonArray.get(randomPage);

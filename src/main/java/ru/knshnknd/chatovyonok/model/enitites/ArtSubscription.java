@@ -5,14 +5,11 @@ import javax.persistence.*;
 @Entity
 public class ArtSubscription {
     @Id
-    @Column
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private String chatId;
 
-    @Column
     private Boolean isActive;
 
     public ArtSubscription() {
