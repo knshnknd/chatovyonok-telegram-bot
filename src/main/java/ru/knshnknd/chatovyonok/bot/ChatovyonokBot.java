@@ -79,8 +79,8 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
             randomPhraseService.sayRandomPhrase(this, update, 3);
 
             if (message.hasText()) {
-                log.info(user.getUserName() + " в " + currentChatId + ": " + message);
-                System.out.println(user.getUserName() + " в " + currentChatId + ": " + message);
+                log.info(user.getUserName() + " в " + currentChatId + ": " + message.getText());
+                System.out.println(user.getUserName() + " в " + currentChatId + ": " + message.getText());
 
                 // Разбиваем полученное сообщение на две части: команду и текст после команды
                 String[] messageText = message.getText().split(" ", 2);
@@ -221,7 +221,6 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
                     // Скрытые команды админки для отправки сообщений через бота + AdminService
 
-                    // Отправить всем сообщение
 
                 }
             }

@@ -90,7 +90,9 @@ public class WikimediaImageService {
         List<ArtSubscription> artSubscriptionsList = artSubscriptionRepository.findArtSubscriptionByIsActive(Boolean.TRUE);
         for (ArtSubscription artSubscription : artSubscriptionsList) {
             log.info("Отправка икусства для " + artSubscription.getChatId() + " начинается");
+            System.out.println("Отправка икусства для " + artSubscription.getChatId() + " начинается");
             getRandomImageFromWikimedia(bot, artSubscription.getChatId());
+            System.out.println("Отправка икусства для " + artSubscription.getChatId() + " прошла успешно");
             log.info("Отправка икусства для " + artSubscription.getChatId() + " прошла успешно");
 
         }
