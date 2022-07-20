@@ -9,10 +9,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.knshnknd.chatovyonok.bot.BotMessages;
 import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
-import ru.knshnknd.chatovyonok.model.enitites.BotClient;
-import ru.knshnknd.chatovyonok.model.enitites.WiseSubscription;
-import ru.knshnknd.chatovyonok.model.repositories.BotClientRepository;
-import ru.knshnknd.chatovyonok.model.repositories.WiseSubscriptionRepository;
+import ru.knshnknd.chatovyonok.jpa.enitites.BotClient;
+import ru.knshnknd.chatovyonok.jpa.enitites.WiseSubscription;
+import ru.knshnknd.chatovyonok.jpa.repositories.BotClientRepository;
+import ru.knshnknd.chatovyonok.jpa.repositories.WiseSubscriptionRepository;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

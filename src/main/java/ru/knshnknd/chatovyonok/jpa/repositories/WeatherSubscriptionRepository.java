@@ -1,8 +1,8 @@
-package ru.knshnknd.chatovyonok.model.repositories;
+package ru.knshnknd.chatovyonok.jpa.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.knshnknd.chatovyonok.model.enitites.WeatherSubscription;
+import ru.knshnknd.chatovyonok.jpa.enitites.WeatherSubscription;
 
 import java.util.List;
 import java.util.Optional;

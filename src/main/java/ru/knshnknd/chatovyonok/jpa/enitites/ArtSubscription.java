@@ -1,25 +1,21 @@
-package ru.knshnknd.chatovyonok.model.enitites;
+package ru.knshnknd.chatovyonok.jpa.enitites;
 
 import javax.persistence.*;
 
 @Entity
-public class WiseSubscription {
-
+public class ArtSubscription {
     @Id
-    @Column
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private String chatId;
 
-    @Column
     private Boolean isActive;
 
-    public WiseSubscription() {
+    public ArtSubscription() {
     }
 
-    public WiseSubscription(String chatId, Boolean isActive) {
+    public ArtSubscription(String chatId, Boolean isActive) {
         this.chatId = chatId;
         this.isActive = isActive;
     }
@@ -40,11 +36,11 @@ public class WiseSubscription {
         this.chatId = chatId;
     }
 
-    public Boolean getIsActive() {
+    public Boolean getActive() {
         return isActive;
     }
 
-    public void setIsActive(Boolean active) {
+    public void setActive(Boolean active) {
         isActive = active;
     }
 }

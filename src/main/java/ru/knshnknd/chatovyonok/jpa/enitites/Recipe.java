@@ -1,4 +1,4 @@
-package ru.knshnknd.chatovyonok.model.enitites;
+package ru.knshnknd.chatovyonok.jpa.enitites;
 
 import javax.persistence.*;
 

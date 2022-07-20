@@ -2,8 +2,6 @@ package ru.knshnknd.chatovyonok.bot;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -16,8 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.knshnknd.chatovyonok.service.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
 
@@ -46,6 +42,8 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
     private ChronicleService chronicleService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private WikiSourceService wikiSourceService;
 
     @Scheduled(cron = "0 0 2 * * *")
     public void timeForEverydayForecast() {
@@ -80,7 +78,6 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
 
             if (message.hasText()) {
                 log.info(user.getUserName() + " в " + currentChatId + ": " + message.getText());
-                System.out.println(user.getUserName() + " в " + currentChatId + ": " + message.getText());
 
                 // Разбиваем полученное сообщение на две части: команду и текст после команды
                 String[] messageText = message.getText().split(" ", 2);
@@ -92,7 +89,7 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                     }
 
                     case "/help@chatovyonokbot", "/help" -> {
-                        sendEditedMessage(currentChatId, BotMessages.HELP_TEXT);
+                        sendEditedHTMLMessage(currentChatId, BotMessages.HELP_TEXT);
                     }
 
                     // Случайная мудрость
@@ -198,12 +195,12 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                         wikimediaImageService.getRandomImageFromWikimedia(this, currentChatId);
                     }
 
-                    // Согласие на получения прогноза погоды определённого города каждый день в определённый чат
+                    // Подписка на искусство
                     case "/art_subscribe@chatovyonokbot", "/art_sub@chatovyonokbot", "/art_subscribe", "/art_sub", "/arts" -> {
                         wikimediaImageService.subscribeToArt(this, currentChatId);
                     }
 
-                    // Отказ на прогноз погоды каждый день
+                    // Отписка от искусства
                     case "/art_unsubscribe@chatovyonokbot", "/art_unsub@chatovyonokbot", "/art_unsubscribe", "/art_unsub", "/artu" -> {
                         wikimediaImageService.unsubscribeFromArt(currentChatId);
                         sendMessage(currentChatId, BotMessages.ART_UNSUBSCRIPTION_MESSAGE);
@@ -219,8 +216,16 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
                         sendMessage(currentChatId, currentChatId);
                     }
 
+                    // Словарь
+                    case "/vocabulary", "/vocab", "/vocabulary@chatovyonokbot" -> {
+                        sendEditedHTMLMessage(currentChatId, wikiSourceService.getRandomDictionaryArticle());
+                    }
+
                     // Скрытые команды админки для отправки сообщений через бота + AdminService
 
+                    case "/test" -> {
+
+                    }
 
                 }
             }
@@ -238,12 +243,24 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendEditedMessage(String chatId, String message) {
+    public void sendEditedHTMLMessage(String chatId, String message) {
         try {
             execute(SendMessage.builder()
                     .chatId(chatId)
                     .text(message)
                     .parseMode("HTML")
+                    .build());
+        } catch (TelegramApiException e) {
+            sendErrorMessageAndLog(chatId, e);
+        }
+    }
+
+    public void sendEditedMarkdownV2Message(String chatId, String message) {
+        try {
+            execute(SendMessage.builder()
+                    .chatId(chatId)
+                    .text(message)
+                    .parseMode("MarkdownV2")
                     .build());
         } catch (TelegramApiException e) {
             sendErrorMessageAndLog(chatId, e);
@@ -267,8 +284,8 @@ public class ChatovyonokBot extends TelegramLongPollingBot {
         try {
             execute(SendMessage.builder()
                     .chatId(chatId)
-                    .text("К сожалению, произошла непредвиденная ошибка с выполнением этой команды! " +
-                            "Информация об ошибке уже отправлена разработчикам. \n\nНо всё равно попробуйте ещё раз выполнить эту команду.")
+                    .text("Ошибка с выполнением команды! Информация отправлена разработчикам." +
+                            "\n\nПопробуйте ещё раз.")
                     .build());
             log.error("ID чата:" + chatId + ". Ошибка в боте: " + e);
         } catch (TelegramApiException ignored) {}

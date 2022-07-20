@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
 import ru.knshnknd.chatovyonok.bot.WikimediaCategories;
-import ru.knshnknd.chatovyonok.model.enitites.ArtSubscription;
-import ru.knshnknd.chatovyonok.model.repositories.ArtSubscriptionRepository;
+import ru.knshnknd.chatovyonok.jpa.enitites.ArtSubscription;
+import ru.knshnknd.chatovyonok.jpa.repositories.ArtSubscriptionRepository;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -90,9 +90,7 @@ public class WikimediaImageService {
         List<ArtSubscription> artSubscriptionsList = artSubscriptionRepository.findArtSubscriptionByIsActive(Boolean.TRUE);
         for (ArtSubscription artSubscription : artSubscriptionsList) {
             log.info("Отправка икусства для " + artSubscription.getChatId() + " начинается");
-            System.out.println("Отправка икусства для " + artSubscription.getChatId() + " начинается");
             getRandomImageFromWikimedia(bot, artSubscription.getChatId());
-            System.out.println("Отправка икусства для " + artSubscription.getChatId() + " прошла успешно");
             log.info("Отправка икусства для " + artSubscription.getChatId() + " прошла успешно");
 
         }
@@ -146,7 +144,9 @@ public class WikimediaImageService {
 
         if ((title.length() + description.length()) >= 200) {
             description = "";
-            title = title.substring(0, 199);
+            if (title.length() >= 200) {
+                title = title.substring(0, 199);
+            }
         }
 
         return "<b>" + title + "</b>" + description;
@@ -178,7 +178,8 @@ public class WikimediaImageService {
 
     private String getRandomPageIdFromCategory() throws ParseException, IOException {
         int randomCategory = new Random().nextInt(categories.length);
-        String urlCategory = urlWikimediaSearchByCategory + categories[randomCategory];
+        String category = categories[randomCategory];
+        String urlCategory = urlWikimediaSearchByCategory + category;
 
         Document doc  = Jsoup.connect(urlCategory).ignoreContentType(true).get();
         String getJson = doc.text();
@@ -187,9 +188,13 @@ public class WikimediaImageService {
         JSONObject jsonObject1 = (JSONObject) jsonObject.get("query");
         JSONArray jsonArray = (JSONArray) jsonObject1.get("categorymembers");
 
-        log.info("JSON массив для категории, размер: " + jsonArray.size() + ". Ссылка на категорию: " + urlCategory);
+        log.info("JSON массив, размер: " + jsonArray.size() + ". Категория: " + category);
 
-        int randomPage = new Random().nextInt(jsonArray.size());
+        int randomPage = 0;
+        if (jsonArray.size() > 0) {
+            randomPage = new Random().nextInt(jsonArray.size());
+        }
+
         JSONObject jsonObject2 = (JSONObject) jsonArray.get(randomPage);
 
         return jsonObject2.get("pageid").toString();

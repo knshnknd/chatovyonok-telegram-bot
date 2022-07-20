@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
-import ru.knshnknd.chatovyonok.model.enitites.Update;
-import ru.knshnknd.chatovyonok.model.repositories.UpdateRepository;
+import ru.knshnknd.chatovyonok.jpa.enitites.Update;
+import ru.knshnknd.chatovyonok.jpa.repositories.UpdateRepository;
 
 import java.util.List;
 

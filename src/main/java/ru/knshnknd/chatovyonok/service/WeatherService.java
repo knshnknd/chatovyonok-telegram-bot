@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.knshnknd.chatovyonok.bot.BotMessages;
 import ru.knshnknd.chatovyonok.bot.ChatovyonokBot;
-import ru.knshnknd.chatovyonok.model.enitites.WeatherSubscription;
-import ru.knshnknd.chatovyonok.model.repositories.WeatherSubscriptionRepository;
+import ru.knshnknd.chatovyonok.jpa.enitites.WeatherSubscription;
+import ru.knshnknd.chatovyonok.jpa.repositories.WeatherSubscriptionRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
